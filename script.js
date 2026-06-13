@@ -146,26 +146,55 @@ function renderLeaderboard(stats) {
     `).join("");
 }
 
-function renderMatches() {
-    document.getElementById("matchList").innerHTML = matches.map((match) => {
-        const performances = Object.entries(match.players).map(([name, stats]) => `
-            <div class="performance">
-                <strong>${name}</strong>: ${stats.goals || 0} goals, ${stats.assists || 0} assists, ${stats.ownGoals || 0} own goals
+function createLineup(match, teamName) {
+    return Object.entries(match.players)
+        .filter(([, stats]) => stats.team === teamName)
+        .map(([name, stats]) => `
+            <div class="lineup-player">
+                <strong>${name}</strong>
+                <div class="lineup-stats">
+                    <span>${stats.goals || 0} G</span>
+                    <span>${stats.assists || 0} A</span>
+                    <span>${(stats.goals || 0) + (stats.assists || 0)} G+A</span>
+                    <span>${stats.ownGoals || 0} OG</span>
+                </div>
             </div>
         `).join("");
+}
 
-        return `
-            <article class="match-card">
-                <div class="match-top">
-                    <span class="date">${formatDate(match.date)}</span>
-                    <span class="badge">MOTM: ${match.manOfTheMatch}</span>
+function renderMatches() {
+    document.getElementById("matchList").innerHTML = matches.map((match) => `
+        <article class="match-card">
+            <div class="match-top">
+                <span class="date">${formatDate(match.date)}</span>
+                <span class="badge">MOTM: ${match.manOfTheMatch}</span>
+            </div>
+
+            <div class="match-scoreboard">
+                <div>
+                    <span>${match.teamA}</span>
+                    <strong>${match.scoreA}</strong>
                 </div>
-                <div class="team-line">${match.teamA} vs ${match.teamB}</div>
-                <div class="score">${match.scoreA} - ${match.scoreB}</div>
-                <div class="performance-list">${performances}</div>
-            </article>
-        `;
-    }).join("");
+                <span class="versus">VS</span>
+                <div>
+                    <span>${match.teamB}</span>
+                    <strong>${match.scoreB}</strong>
+                </div>
+            </div>
+
+            <div class="lineups">
+                <section class="lineup-card">
+                    <h3>${match.teamA} Lineup</h3>
+                    ${createLineup(match, match.teamA)}
+                </section>
+
+                <section class="lineup-card">
+                    <h3>${match.teamB} Lineup</h3>
+                    ${createLineup(match, match.teamB)}
+                </section>
+            </div>
+        </article>
+    `).join("");
 }
 
 function renderMotm() {
