@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mickey Mouse League</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <div class="brand">
+                <img src="logo.png" alt="Mickey Mouse League logo">
+                <span>Mickey Mouse League</span>
+            </div>
+            <div class="nav-links">
+                <a href="#leaderboard">Leaderboard</a>
+                <a href="#matches">Match History</a>
+                <a href="#motm">Man of the Match</a>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div>
+                <p class="eyebrow">5-a-side weekly stats</p>
+                <h1>Mickey Mouse League</h1>
+                <p class="hero-text">Goals, assists, G+A, own goals, wins, losses, match history, and man of the match records.</p>
+                <a class="btn" href="#leaderboard">View leaderboard</a>
+            </div>
+            <img class="hero-logo" src="logo.png" alt="Mickey Mouse League logo">
+        </section>
+    </header>
+
+    <main>
+        <section class="stats-grid" id="summaryCards"></section>
+
+        <section class="section" id="leaderboard">
+            <div class="section-heading">
+                <p class="eyebrow">Rankings</p>
+                <h2>Leaderboard</h2>
+            </div>
+            <div class="tabs" id="tabs"></div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Player</th>
+                            <th>Goals</th>
+                            <th>Assists</th>
+                            <th>G+A</th>
+                            <th>Own Goals</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section two-column">
+            <div id="matches">
+                <div class="section-heading">
+                    <p class="eyebrow">Results</p>
+                    <h2>Match History</h2>
+                </div>
+                <div class="match-list" id="matchList"></div>
+            </div>
+
+            <aside id="motm">
+                <div class="section-heading">
+                    <p class="eyebrow">Awards</p>
+                    <h2>Man of the Match</h2>
+                </div>
+                <div class="motm-list" id="motmList"></div>
+            </aside>
+        </section>
+    </main>
+
+    <footer>
+        <p>Mickey Mouse League · Hardcoded HTML/CSS/JS version</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
