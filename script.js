@@ -116,12 +116,19 @@ function renderSummaryCards(stats) {
     `).join("");
 }
 
-function renderTabs() {
-    document.getElementById("tabs").innerHTML = Object.keys(statLabels).map((key) => `
-        <button class="tab ${key === activeSort ? "active" : ""}" data-sort="${key}">${statLabels[key]}</button>
-    `).join("");
+function renderTabs(stats) {
+    document.getElementById("statMenu").innerHTML = Object.keys(statLabels).map((key) => {
+        const leader = [...stats].sort((a, b) => b[key] - a[key] || b.ga - a.ga || b.goals - a.goals)[0];
 
-    document.querySelectorAll(".tab").forEach((button) => {
+        return `
+            <button class="stat-menu-item ${key === activeSort ? "active" : ""}" data-sort="${key}">
+                <span>${statLabels[key]}</span>
+                <strong>${leader ? leader[key] : 0}</strong>
+            </button>
+        `;
+    }).join("");
+
+    document.querySelectorAll(".stat-menu-item").forEach((button) => {
         button.addEventListener("click", () => {
             activeSort = button.dataset.sort;
             renderApp();
@@ -129,16 +136,43 @@ function renderTabs() {
     });
 }
 
+function renderFeaturedPlayer(sortedStats) {
+    const leader = sortedStats[0];
+
+    document.getElementById("activeStatTitle").textContent = statLabels[activeSort];
+    document.getElementById("activeStatCount").textContent = `${sortedStats.length} players`;
+
+    if (!leader) {
+        document.getElementById("featuredPlayer").innerHTML = "";
+        return;
+    }
+
+    document.getElementById("featuredPlayer").innerHTML = `
+        <div class="featured-rank">1</div>
+        <div class="featured-details">
+            <span>Current leader</span>
+            <strong>${leader.name}</strong>
+            <p>${leader.goals} goals · ${leader.assists} assists · ${leader.ga} G+A</p>
+        </div>
+        <div class="featured-total">
+            <span>${statLabels[activeSort]}</span>
+            <strong>${leader[activeSort]}</strong>
+        </div>
+    `;
+}
+
 function renderLeaderboard(stats) {
     const sortedStats = [...stats].sort((a, b) => b[activeSort] - a[activeSort] || b.ga - a.ga || b.goals - a.goals);
 
+    renderFeaturedPlayer(sortedStats);
+
     document.getElementById("leaderboardBody").innerHTML = sortedStats.map((player, index) => `
-        <tr>
-            <td data-label="#">${index + 1}</td>
-            <td data-label="Player" class="player-name">${player.name}</td>
+        <tr class="${index < 3 ? "top-rank" : ""}">
+            <td data-label="Rank"><span class="rank-badge">${index + 1}</span></td>
+            <td data-label="Player" class="player-name"><span>${player.name}</span></td>
             <td data-label="Goals">${player.goals}</td>
             <td data-label="Assists">${player.assists}</td>
-            <td data-label="G+A">${player.ga}</td>
+            <td data-label="G+A"><strong>${player.ga}</strong></td>
             <td data-label="Own Goals">${player.ownGoals}</td>
             <td data-label="Wins">${player.wins}</td>
             <td data-label="Losses">${player.losses}</td>
@@ -219,7 +253,7 @@ function renderApp() {
     const stats = createPlayerStats();
 
     renderSummaryCards(stats);
-    renderTabs();
+    renderTabs(stats);
     renderLeaderboard(stats);
     renderMatches();
     renderMotm();

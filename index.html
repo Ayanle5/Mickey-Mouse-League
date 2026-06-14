@@ -34,28 +34,47 @@
     <main>
         <section class="stats-grid" id="summaryCards"></section>
 
-        <section class="section" id="leaderboard">
-            <div class="section-heading">
-                <p class="eyebrow">Rankings</p>
-                <h2>Leaderboard</h2>
+        <section class="section stats-section" id="leaderboard">
+            <div class="section-heading stats-heading-row">
+                <div>
+                    <p class="eyebrow">Rankings</p>
+                    <h2>Player Stats</h2>
+                </div>
+                <div class="stats-season-pill">MML 2026</div>
             </div>
-            <div class="tabs" id="tabs"></div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Player</th>
-                            <th>Goals</th>
-                            <th>Assists</th>
-                            <th>G+A</th>
-                            <th>Own Goals</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody"></tbody>
-                </table>
+
+            <div class="pl-stats-layout">
+                <aside class="stat-menu" id="statMenu"></aside>
+
+                <div class="stat-panel">
+                    <div class="stat-panel-head">
+                        <div>
+                            <span class="stat-panel-label">Category</span>
+                            <h3 id="activeStatTitle">G+A</h3>
+                        </div>
+                        <span class="stat-panel-count" id="activeStatCount">0 players</span>
+                    </div>
+
+                    <div class="featured-player" id="featuredPlayer"></div>
+
+                    <div class="table-wrap pl-table-wrap">
+                        <table class="pl-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Player</th>
+                                    <th>Goals</th>
+                                    <th>Assists</th>
+                                    <th>G+A</th>
+                                    <th>Own Goals</th>
+                                    <th>Wins</th>
+                                    <th>Losses</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
 
