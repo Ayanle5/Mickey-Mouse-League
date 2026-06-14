@@ -134,14 +134,14 @@ function renderLeaderboard(stats) {
 
     document.getElementById("leaderboardBody").innerHTML = sortedStats.map((player, index) => `
         <tr>
-            <td>${index + 1}</td>
-            <td class="player-name">${player.name}</td>
-            <td>${player.goals}</td>
-            <td>${player.assists}</td>
-            <td>${player.ga}</td>
-            <td>${player.ownGoals}</td>
-            <td>${player.wins}</td>
-            <td>${player.losses}</td>
+            <td data-label="#">${index + 1}</td>
+            <td data-label="Player" class="player-name">${player.name}</td>
+            <td data-label="Goals">${player.goals}</td>
+            <td data-label="Assists">${player.assists}</td>
+            <td data-label="G+A">${player.ga}</td>
+            <td data-label="Own Goals">${player.ownGoals}</td>
+            <td data-label="Wins">${player.wins}</td>
+            <td data-label="Losses">${player.losses}</td>
         </tr>
     `).join("");
 }
