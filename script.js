@@ -1,16 +1,20 @@
-const players = [
-    "Ayanle",
-    "Nahi",
-    "Josh",
-    "Samuel",
-    "Jelani",
-    "Mo",
-    "Enzo",
-    "Faizaan",
-    "Filip",
-    "Juel",
-    "Saqib"
+const playerStats = [
+    { name: "Ayanle", appearances: 1, goals: 2, assists: 4, ga: 6, saves: 0 },
+    { name: "Enzo", appearances: 0, goals: 0, assists: 0, ga: 0, saves: 0 },
+    { name: "Faizaan", appearances: 1, goals: 10, assists: 2, ga: 12, saves: 0 },
+    { name: "Filip", appearances: 0, goals: 0, assists: 0, ga: 0, saves: 0 },
+    { name: "Jelani", appearances: 1, goals: 4, assists: 2, ga: 6, saves: 0 },
+    { name: "Josh", appearances: 1, goals: 10, assists: 1, ga: 11, saves: 0 },
+    { name: "Juel", appearances: 1, goals: 0, assists: 4, ga: 4, saves: 5 },
+    { name: "Mikel", appearances: 0, goals: 0, assists: 0, ga: 0, saves: 0 },
+    { name: "Mo", appearances: 1, goals: 5, assists: 2, ga: 7, saves: 7 },
+    { name: "Nahi", appearances: 1, goals: 8, assists: 4, ga: 12, saves: 2 },
+    { name: "Saqib", appearances: 1, goals: 0, assists: 3, ga: 3, saves: 12 },
+    { name: "Samuel", appearances: 0, goals: 3, assists: "*", ga: "*", saves: 0 },
+    { name: "Shafin", appearances: 0, goals: 3, assists: "*", ga: "*", saves: 0 }
 ];
+
+const players = playerStats.map((player) => player.name);
 
 const matches = [
     {
@@ -57,55 +61,30 @@ const statLabels = {
     goals: "Goals",
     assists: "Assists",
     ga: "G+A",
-    ownGoals: "Own Goals",
-    wins: "Wins",
-    losses: "Losses"
+    saves: "Saves",
+    appearances: "Appearances"
 };
 
-let activeSort = "ga";
+let activeSort = "goals";
+
+function getNumber(value) {
+    return typeof value === "number" ? value : 0;
+}
+
+function showStat(value) {
+    return value === "*" ? "*" : getNumber(value);
+}
 
 function createPlayerStats() {
-    const stats = players.map((name) => ({
-        name,
-        goals: 0,
-        assists: 0,
-        ga: 0,
-        ownGoals: 0,
-        wins: 0,
-        losses: 0
-    }));
-
-    matches.forEach((match) => {
-        stats.forEach((player) => {
-            const data = match.players[player.name];
-
-            if (!data) return;
-
-            player.goals += data.goals || 0;
-            player.assists += data.assists || 0;
-            player.ownGoals += data.ownGoals || 0;
-
-            if (data.team === match.winner) {
-                player.wins += 1;
-            } else {
-                player.losses += 1;
-            }
-        });
-    });
-
-    stats.forEach((player) => {
-        player.ga = player.goals + player.assists;
-    });
-
-    return stats;
+    return playerStats.map((player) => ({ ...player }));
 }
 
 function renderSummaryCards(stats) {
     const cards = [
-        { label: "Players", value: players.length },
-        { label: "Matches", value: matches.length },
-        { label: "Total Goals", value: stats.reduce((sum, player) => sum + player.goals, 0) },
-        { label: "Own Goals", value: stats.reduce((sum, player) => sum + player.ownGoals, 0) }
+        { label: "Players", value: stats.length },
+        { label: "Top Goals", value: Math.max(...stats.map((player) => getNumber(player.goals))) },
+        { label: "Top Assists", value: Math.max(...stats.map((player) => getNumber(player.assists))) },
+        { label: "Total Saves", value: stats.reduce((sum, player) => sum + getNumber(player.saves), 0) }
     ];
 
     document.getElementById("summaryCards").innerHTML = cards.map((card) => `
@@ -118,12 +97,12 @@ function renderSummaryCards(stats) {
 
 function renderTabs(stats) {
     document.getElementById("statMenu").innerHTML = Object.keys(statLabels).map((key) => {
-        const leader = [...stats].sort((a, b) => b[key] - a[key] || b.ga - a.ga || b.goals - a.goals)[0];
+        const leader = [...stats].sort((a, b) => getNumber(b[key]) - getNumber(a[key]) || getNumber(b.ga) - getNumber(a.ga) || getNumber(b.goals) - getNumber(a.goals))[0];
 
         return `
             <button class="stat-menu-item ${key === activeSort ? "active" : ""}" data-sort="${key}">
                 <span>${statLabels[key]}</span>
-                <strong>${leader ? leader[key] : 0}</strong>
+                <strong>${leader ? showStat(leader[key]) : 0}</strong>
             </button>
         `;
     }).join("");
@@ -138,9 +117,11 @@ function renderTabs(stats) {
 
 function renderFeaturedPlayer(sortedStats) {
     const leader = sortedStats[0];
+    const activeLabel = statLabels[activeSort];
 
-    document.getElementById("activeStatTitle").textContent = statLabels[activeSort];
+    document.getElementById("activeStatTitle").textContent = activeLabel;
     document.getElementById("activeStatCount").textContent = `${sortedStats.length} players`;
+    document.getElementById("selectedStatHeader").textContent = activeLabel;
 
     if (!leader) {
         document.getElementById("featuredPlayer").innerHTML = "";
@@ -152,17 +133,18 @@ function renderFeaturedPlayer(sortedStats) {
         <div class="featured-details">
             <span>Current leader</span>
             <strong>${leader.name}</strong>
-            <p>${leader.goals} goals · ${leader.assists} assists · ${leader.ga} G+A</p>
+            <p>Leading the ${activeLabel.toLowerCase()} chart</p>
         </div>
         <div class="featured-total">
-            <span>${statLabels[activeSort]}</span>
-            <strong>${leader[activeSort]}</strong>
+            <span>${activeLabel}</span>
+            <strong>${showStat(leader[activeSort])}</strong>
         </div>
     `;
 }
 
 function renderLeaderboard(stats) {
-    const sortedStats = [...stats].sort((a, b) => b[activeSort] - a[activeSort] || b.ga - a.ga || b.goals - a.goals);
+    const activeLabel = statLabels[activeSort];
+    const sortedStats = [...stats].sort((a, b) => getNumber(b[activeSort]) - getNumber(a[activeSort]) || getNumber(b.ga) - getNumber(a.ga) || getNumber(b.goals) - getNumber(a.goals));
 
     renderFeaturedPlayer(sortedStats);
 
@@ -170,12 +152,10 @@ function renderLeaderboard(stats) {
         <tr class="${index < 3 ? "top-rank" : ""}">
             <td data-label="Rank"><span class="rank-badge">${index + 1}</span></td>
             <td data-label="Player" class="player-name"><span>${player.name}</span></td>
-            <td data-label="Goals">${player.goals}</td>
-            <td data-label="Assists">${player.assists}</td>
-            <td data-label="G+A"><strong>${player.ga}</strong></td>
-            <td data-label="Own Goals">${player.ownGoals}</td>
-            <td data-label="Wins">${player.wins}</td>
-            <td data-label="Losses">${player.losses}</td>
+            <td data-label="${activeLabel}" class="selected-stat-cell">
+                <strong>${showStat(player[activeSort])}</strong>
+                <small>${activeLabel}</small>
+            </td>
         </tr>
     `).join("");
 }
@@ -190,7 +170,7 @@ function createLineup(match, teamName) {
                     <span>${stats.goals || 0} G</span>
                     <span>${stats.assists || 0} A</span>
                     <span>${(stats.goals || 0) + (stats.assists || 0)} G+A</span>
-                    <span>${stats.ownGoals || 0} OG</span>
+                    <span>${stats.saves || 0} Saves</span>
                 </div>
             </div>
         `).join("");
